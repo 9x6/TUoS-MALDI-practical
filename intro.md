@@ -11,7 +11,7 @@ Normally we would aim to have all software installed on computers in the lab, th
 
 ### Proteowizard
 
-Proteowizard comes with a programme called msconvert that can be used to convert the data that comes from the machine into an open data format. To do this, it uses closed-source vendor-specific libraries which only work on Windows systems. If you do not have access to a windows system, or if installing fails, converted data files can be provided. For advanced non-windows users a docker image is available, however this also assumes knowledge of the command line version of msconvert.
+Proteowizard comes with a programme called msconvert that can be used to convert the data that comes from the machine into an open data format. To do this, it uses closed-source vendor-specific libraries which only work on Windows systems. If you do not have access to a windows system, or if installing fails, download the pre-processed data files from the data section below instead of the RAW data. For the determined and advanced non-windows user a docker image is available, however this also assumes knowledge of docker as well as the command line version of msconvert, which we will not cover here.
 Proteowizard can be downloaded [here](http://proteowizard.sourceforge.net/download.html). The 64 bit installer is usually the best option. The e-mail field is optional.
 
 ### R
@@ -31,3 +31,5 @@ The [raw data files](https://drive.google.com/open?id=1oY4WlWQrMBI9cYQs5AaBZ5ysH
 If you have a limited connection, [pre-processed input files](https://drive.google.com/open?id=1U6qHw7jATcopLD4IetoPnd-DWJDuEne9) (~15 Mb) can be downloaded here (University of Sheffield account required).
 
 ## Next Steps
+
+Pre-processing the data
