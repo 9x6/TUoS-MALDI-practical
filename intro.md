@@ -16,7 +16,7 @@ Proteowizard can be downloaded [here](http://proteowizard.sourceforge.net/downlo
 
 ### R
 
-As the University of Sheffield uses R as preferred statistics platform, you'll probably already have it installed. If you don't, it can be downloaded by selecting a local mirror via r-project.org. In the UK, Bristol isn't a bad choice, the download page for the Windows version is [here](https://www.stats.bris.ac.uk/R/bin/windows/base/). R will soon introduce a major new version (4.0). If you are offered this, please look for the last 3.6.x version under previous releases instead. Older versions of R may also work, but have not been tested.
+As the University of Sheffield uses R as preferred statistics platform, you'll probably already have it installed. If you don't, it can be downloaded by selecting a local mirror via [r-project.org](https://r-project.org). In the UK, Bristol isn't a bad choice, the download page for the Windows version is [here](https://www.stats.bris.ac.uk/R/bin/windows/base/). R will soon introduce a major new version (4.0). If you are offered this, please look for the last 3.6.x version under previous releases instead. Older versions of R may also work, but have not been tested.
 
 ### RStudio
 
