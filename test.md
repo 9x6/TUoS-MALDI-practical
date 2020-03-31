@@ -6,12 +6,14 @@ library(MALDIquantForeign)
 
 We have 27 input files, each corresponding to a single sample.
 Data is in mzML. What does an example sample look like?
-```{r check tolerance}
+
+```{r}
 profiledata<-readMSData("RAW/HW-290120-007.mzML", centroided. = F, msLevel. = 1, mode = 'onDisk')
 profiledata
 ```
 We see 119 scans.
 How do the scans relate? Supposedly uniform sample -> sum data for a clearer picture. Small differences between scans may exist, what is the tolerance we should allow? How much variation is there between subsequent scans?
+
 ```{r}
 MzScattering<-unlist(estimateMzScattering(profiledata, timeDomain = T))
 max(MzScattering)/sqrt(50)
@@ -19,13 +21,16 @@ max(MzScattering)/sqrt(50)
 N.B. this is slightly misusing a function designed for use with LCMS. It does, however, give us a ballpark figure to work with. As we have TOF data, we specify timeDomain to be true. This will mean functions actually operate on the sqrt of mz values. To figure out what the worst-case scattering is in ppm, we divide the scattering by square root (as this is in timeDomain) of the lowest mz (50).
 
 We can then sum up the scans. combineSpectra does what we want, but most of the options are specified in meanMzInts(). From the documentation (run ?meanMzInts() for a list)
-```{r sum test}
+
+```{r}
 profilespectra<-Spectra(spectra(profiledata)) #Extract the spectra
 pdsum15<-MSnbase::combineSpectra(profilespectra, weighted=F, timeDomain=T, ppm=15, intensityFun=sum, unionPeaks=T)
 profile15<-as(pdsum15, "MSnExp") #Format conversion
 ```
+
 To illustrate what's happening when we sum (left is linear y-axis, right is log y-axis), we can plot our summed data together with (in this case) 19 individual scans. Note missing values cause gaps in the plot
-```{r Sum illustration}
+
+```{r}
 par(mfrow=c(1,2))
 plot(x=MSnbase::mz(filterMz(profile15[[1]], mz=c(380,380.3))),
      y=MSnbase::intensity(filterMz(profile15[[1]], mz=c(380,380.3))),
@@ -43,13 +48,14 @@ for(n in seq(from=10, to=100, by=5)){
         y=MSnbase::intensity(filterMz(profiledata[[n]], mz=c(380,380.3))),
         col="grey")
 }
-
 par(mfrow=c(1,1))
 ```
+
 Supposing we would want the average rather than the sum, how can that be achieved by changing the code block 'sum test' above? Why can using an average sometimes be a good idea?
 
 Running this manually on every file would be a lot of coding. We're going to assume that the tolerance that we've chosen will apply to all samples in this data set. We can write a bit of code (a function) that given an input, produces an output by following the steps we tell it to do.
-```{r Convert function}
+
+```{r}
 createSumFilenames<-function(filename, out.folder="SUM"){
   file.path(out.folder,sub("\\.mzML",".sum.mzML",basename(filename)))
 }
@@ -70,6 +76,7 @@ mergeScans<-function(filename, out.folder="SUM", tol.ppm=15){
   }
 }
 ```
+
 The custom function mergeScans takes three arguments: a filename, the name for an output directory (that needs to exist) and tol.ppm, which defaults to 15 if not specified.
 An output filename is created by substituting part of the input file name. The Input directory is stripped at the same time, so we can just prepend the output folder to get the full path for an output file path.
 When we know where we want to write, we check whether there is already data there, as it stops us from doing long(ish) calculations that we already did if we rerun our code. Remember to remove the files if we decide that we need to change the processing in the function in such a way that it would generate new output.
@@ -101,7 +108,7 @@ rep(c('A','B'), each=3)
 which gets us A A A B B B
 
 Given the structure below, how can we fill in the missing annotations (i.e. replace the 0s)?
-```{r metadata}
+```{r}
 samples<-as.data.frame(Sys.glob("RAW/*[0-9].mzML"), stringsAsFactors = F)
 colnames(samples)[1]<-"filename"
 samples$sum_filename<-createSumFilenames(samples$filename)
@@ -114,6 +121,7 @@ samples
 ```
 <details>
   <summary>Expected output</summary>
+
 |   |filename|               sum_filename| soil | biorep | techrep | bio_id | tech_id|
 |---|---:|---:|:---:|:---:|:---:|:---:|:---:|
 |1|RAW/HW-290120-007.mzML|SUM/HW-290120-007.sum.mzML|A|1|1|A1|A1.1|
@@ -143,11 +151,13 @@ samples
 |25|RAW/HW-290120-031.mzML|SUM/HW-290120-031.sum.mzML|O|3|1|O3|O3.1|
 |26|RAW/HW-290120-032.mzML|SUM/HW-290120-032.sum.mzML|O|3|2|O3|O3.2|
 |27|RAW/HW-290120-033.mzML|SUM/HW-290120-033.sum.mzML|O|3|3|O3|O3.3|
+
 </details>
 
 <details>
   <summary>Solution</summary>
-```{r metadata}
+
+```{r}
 samples$soil<-c(rep('A',9),rep('F',9),rep('O',9))
 samples$biorep<-c(rep(rep(1:3, each=3),3))
 samples$techrep<-c(rep(1:3,9))
@@ -155,6 +165,7 @@ samples$bio_id<-paste0(samples$soil,samples$biorep)
 samples$tech_id<-paste0(samples$bio_id,".",samples$techrep)
 samples
 ```
+
 </details>
 
 
