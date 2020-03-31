@@ -7,14 +7,14 @@ library(MALDIquantForeign)
 We have 27 input files, each corresponding to a single sample.
 Data is in mzML. What does an example sample look like?
 
-```{r}
+```r
 profiledata<-readMSData("RAW/HW-290120-007.mzML", centroided. = F, msLevel. = 1, mode = 'onDisk')
 profiledata
 ```
 We see 119 scans.
 How do the scans relate? Supposedly uniform sample -> sum data for a clearer picture. Small differences between scans may exist, what is the tolerance we should allow? How much variation is there between subsequent scans?
 
-```{r}
+```r
 MzScattering<-unlist(estimateMzScattering(profiledata, timeDomain = T))
 max(MzScattering)/sqrt(50)
 ```
@@ -22,7 +22,7 @@ N.B. this is slightly misusing a function designed for use with LCMS. It does, h
 
 We can then sum up the scans. combineSpectra does what we want, but most of the options are specified in meanMzInts(). From the documentation (run ?meanMzInts() for a list)
 
-```{r}
+```r
 profilespectra<-Spectra(spectra(profiledata)) #Extract the spectra
 pdsum15<-MSnbase::combineSpectra(profilespectra, weighted=F, timeDomain=T, ppm=15, intensityFun=sum, unionPeaks=T)
 profile15<-as(pdsum15, "MSnExp") #Format conversion
@@ -30,7 +30,7 @@ profile15<-as(pdsum15, "MSnExp") #Format conversion
 
 To illustrate what's happening when we sum (left is linear y-axis, right is log y-axis), we can plot our summed data together with (in this case) 19 individual scans. Note missing values cause gaps in the plot
 
-```{r}
+```r
 par(mfrow=c(1,2))
 plot(x=MSnbase::mz(filterMz(profile15[[1]], mz=c(380,380.3))),
      y=MSnbase::intensity(filterMz(profile15[[1]], mz=c(380,380.3))),
@@ -55,7 +55,7 @@ Supposing we would want the average rather than the sum, how can that be achieve
 
 Running this manually on every file would be a lot of coding. We're going to assume that the tolerance that we've chosen will apply to all samples in this data set. We can write a bit of code (a function) that given an input, produces an output by following the steps we tell it to do.
 
-```{r}
+```r
 createSumFilenames<-function(filename, out.folder="SUM"){
   file.path(out.folder,sub("\\.mzML",".sum.mzML",basename(filename)))
 }
@@ -93,22 +93,22 @@ We've been told the following about our samples
 - The order of soil is A (Agricultural), F (Forest), O (Organic)
 
 We can repeat an element of a vector using the rep() function. E.g:
-```{r}
+```r
 rep('A', 3)
 ```
 gives us A A A
 A vector itself can also be repeated e.g.:
-```{r}
+```r
 rep(c('A','B'), 3)
 ```
 gives us A B A B A B. This can also be done by element:
-```{r}
+```r
 rep(c('A','B'), each=3)
 ```
 which gets us A A A B B B
 
 Given the structure below, how can we fill in the missing annotations (i.e. replace the 0s)?
-```{r}
+```r
 samples<-as.data.frame(Sys.glob("RAW/*[0-9].mzML"), stringsAsFactors = F)
 colnames(samples)[1]<-"filename"
 samples$sum_filename<-createSumFilenames(samples$filename)
@@ -169,6 +169,6 @@ samples
 </details>
 
 
-```{r load files}
+```r
 rawdata<-importMzMl(samples$filename, centroided = F)
 ```
