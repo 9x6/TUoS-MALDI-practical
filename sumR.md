@@ -31,7 +31,7 @@ An issue with summing the scans is that small differences in mz values between s
 MzScattering<-unlist(estimateMzScattering(profiledata, timeDomain = T))
 max(MzScattering)/sqrt(50)
 ```
-N.B. this is slightly misusing a function designed for use with LCMS. It does, however, give us a ballpark figure to work with. As we have TOF data, we specify timeDomain to be true. This will mean functions actually operate on the sqrt of mz values. To figure out what the worst-case scattering is relative to the mzs being compared, we divide the scattering by square root (as this is in timeDomain) of the lowest mz (50).
+N.B. this is slightly misusing a function designed for use with LCMS. It does, however, give us a ballpark figure to work with. As we have TOF data, we specify timeDomain to be true. This will mean functions actually operate on the square root of mz values. To figure out what the worst-case scattering is relative to the mzs being compared, we divide the scattering by square root (as this is in timeDomain) of the lowest mz (50).
 
 >How many ppm (parts per million) is the worst case scattering, rounded down to the nearest integer?
 <details>
@@ -71,9 +71,30 @@ for(n in seq(from=10, to=100, by=5)){
 par(mfrow=c(1,1))
 ```
 
-Supposing we would want the average rather than the sum, how can that be achieved by changing the code block 'sum test' above? Why can using an average sometimes be a good idea?
+>Why does the summed signal look cleaner?
+<details>
+<summary>Answer</summary>
+
+>The random noise in the individual scans is less of an issue when added together, as it cancels out.
+</details>
+
+>Supposing we would want the average rather than the sum, how can that be achieved by changing the code block 'sum test' above? 
+<details>
+<summary>Answer</summary>
+
+>The function `combineSpectra` takes an argument called `intensityFun` which is set to `sum` in the block above. Documentation `?meanMzInts` shows the default is actually base::mean, which would average the scans. We can therefore replace `sum` by `base::mean` or just remove the entire `intensityFun=sum` argument.
+</details>
+
+>Why can using an average sometimes be a good idea?
+<details>
+<summary>Answer</summary>
+
+>In some cases the number of scans won't be equal between files. Summing them up would give us different ranges for the intensities between samples that are a technical artefact. In most cases, however, we would rely on another normalisation method to make the signals of different samples more comparable, as there are also other sources of variation that we would want to correct for. An minor advantage to averaging is that the values of an averaged spectrum are much closer to the values in the individual spectra that were used to calculate the average. This can be simulated by dividing y values in the `plot` code for the summed spectra (but not the `lines` code for the individual spectra) by 119 (i.e. `y=(MSnbase::intensity(filterMz(profile15[[1]], mz=c(380,380.3))))/119`)
+</details>
 
 Running this manually on every file would be a lot of coding. We're going to assume that the tolerance that we've chosen will apply to all samples in this data set. We can write a bit of code (a function) that given an input, produces an output by following the steps we tell it to do.
+
+
 
 ```r
 createSumFilenames<-function(filename, out.folder="SUM"){
@@ -101,3 +122,21 @@ The custom function mergeScans takes three arguments: a filename, the name for a
 An output filename is created by substituting part of the input file name. The Input directory is stripped at the same time, so we can just prepend the output folder to get the full path for an output file path.
 When we know where we want to write, we check whether there is already data there, as it stops us from doing long(ish) calculations that we already did if we rerun our code. Remember to remove the files if we decide that we need to change the processing in the function in such a way that it would generate new output.
 The rest of the function does the same summing as we tested previously.
+
+So we then need a vector or a list of filenames, which we can get using some wildcard matching:
+```r
+infiles<-Sys.glob("RAW/*.mzML")
+infiles
+```
+
+Which we can then feed to `sapply`, that will run a function of our choice using each value of infiles as an input for individual runs of the function we tell it to use:
+
+```r
+sapply(infiles, mergeScans)
+```
+
+After the code has run, we'll have a summed spectrum for each sample in the SUM directory of our project directory.
+
+## Next steps
+
+Now the data has been summed, we can start to [extract features from the spectra](maldiquant).
