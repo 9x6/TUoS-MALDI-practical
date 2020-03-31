@@ -30,6 +30,11 @@ The [raw data files](https://drive.google.com/open?id=1oY4WlWQrMBI9cYQs5AaBZ5ysH
 
 If you have a limited connection, [pre-processed input files](https://drive.google.com/open?id=1U6qHw7jATcopLD4IetoPnd-DWJDuEne9) (~15 Mb) can be downloaded here (University of Sheffield account required).
 
+## Project setup
+
+Throughout the tutorial, code snippets assume a specific data structure. Please create a directory in which you'll be working for this tutorial (also refered to as 'project directory'). The name of the directory does not matter, though a good, descriptive name is always advisable.
+Within the directory, unzip the RAW data files (if using) in such a way that the data files are in a sub directory that is called `RAW`. files are sometimes unpacked in an odd way, so check that they are directly in `RAW` and not nested in an additional layer of directories (e.g. in `RAW\RAW`). Also create a directory within your project directory called `SUM`. If you're using the pre-processed input files, make sure they're unpacked into the `SUM` directory.
+
 ## Next Steps
 
-Pre-processing the data
+Next we'll [convert the data from their proprietary format to an open format](msconvert).
