@@ -20,6 +20,7 @@ profiledata
 
 <details>
 <summary>Answer</summary>
+
 >There are 119 scans (according to the spectra data)\
 >How do the scans relate? The spectra data block suggests there is a retention time. Technically this may be the case, but thinking back to the lab practical, no chromatography was involved. The samples were spotted on a plate, and are supposedly a uniform sample - meaning there is no relevant separation that should show across scans. We will get a more accurate picture is we sum the scans together.
 </details>
@@ -35,6 +36,7 @@ N.B. this is slightly misusing a function designed for use with LCMS. It does, h
 >How many ppm (parts per million) is the worst case scattering, rounded down to the nearest integer?
 <details>
 <summary>Answer</summary>
+
 >1.5e-5 = 15e-6 = 15 ppm
 </details>
 
