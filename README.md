@@ -3,4 +3,5 @@
 ## Contents
 
 - [Introduction](intro)
+- [Converting files](msconvert)
 - [Test](test)
