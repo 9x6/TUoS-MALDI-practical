@@ -1,11 +1,4 @@
----
-title: "MALDI-tut"
-author: "jhms"
-date: "30/03/2020"
-output: html_document
----
-
-```{r setup, include=FALSE}
+```r
 knitr::opts_chunk$set(echo = TRUE)
 library(MSnbase)
 library(MALDIquantForeign)
