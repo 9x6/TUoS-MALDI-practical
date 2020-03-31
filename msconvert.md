@@ -17,4 +17,4 @@ Choose 'Open' to tell msconvert it is these files we want to convert. The rest o
 Finally, start the conversion by pressing the start button at the lower right corner of the main window.
 
 ## Next Steps
-Next we'll [set up an R-project and pre-process the raw data for further analysis](initialR).
+Next we'll [set up an R-project](initialR).
