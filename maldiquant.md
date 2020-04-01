@@ -1,5 +1,11 @@
 ## Extracting features
 
+These steps are best performed in a new markdown file. We'll be using a number of packages:
+```r
+library(MALDIquantForeign)
+library(MALDIquant)
+```
+
 ### Metadata
 
 Before we can process our samples, we need to create a list of which samples we want to process.
@@ -68,7 +74,7 @@ samples
 <details>
   <summary>Solution</summary>
 
-```{r}
+```r
 samples$soil<-c(rep('A',9),rep('F',9),rep('O',9))
 samples$biorep<-c(rep(rep(1:3, each=3),3))
 samples$techrep<-c(rep(1:3,9))
@@ -79,7 +85,20 @@ samples
 
 </details>
 
+### Importing data
 
-```r
-rawdata<-importMzMl(samples$filename, centroided = F)
+After summing, the size of the data is significantly smaller. In this project, we'll therefore be able to load all the samples into memory at the same time, which makes it easier to process all samples in one go. In our `samples` dataframe we have a list of files in the column `filename`. The MALDIquantForeign package provides the function `importMzMl` to load mzML files:
+```{r load files}
+suppressWarnings(rawdata<-importMzMl(samples$filename, centroided = F, verbose=F))
+length(rawdata)
+```
+The code chunk suppresses warnings for the import function, as it will produce a bunch of warnings about mismatching checksums. Whilst there is a standard for how these should be calculated, it appears that there are different implementations that can cause mismatches. At this stage the relevant question is:
+
+>Did we load the expected number of files?
+
+### Visualising data
+
+We can take a look at a full spectrum like so:
+```{r}
+plot(rawdata[[1]])
 ```
