@@ -77,7 +77,7 @@ par(mfrow=c(1,1))
 
 >The random noise in the individual scans is less of an issue when added together, as it cancels out.
 </details>
-
+</br>
 
 >Supposing we would want the average rather than the sum, how can that be achieved by changing the code block 'sum test' above? 
 <details>
@@ -85,7 +85,7 @@ par(mfrow=c(1,1))
 
 >The function `combineSpectra` takes an argument called `intensityFun` which is set to `sum` in the block above. Documentation `?meanMzInts` shows the default is actually base::mean, which would average the scans. We can therefore replace `sum` by `base::mean` or just remove the entire `intensityFun=sum` argument.
 </details>
-
+</br>
 
 >Why can using an average sometimes be a good idea?
 <details>
@@ -137,6 +137,7 @@ Which we can then feed to `sapply`, that will run a function of our choice using
 sapply(infiles, mergeScans)
 ```
 
+**Note that this code takes a while to finish** \
 After the code has run, we'll have a summed spectrum for each sample in the SUM directory of our project directory.
 
 ## Next steps
