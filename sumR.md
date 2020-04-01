@@ -17,13 +17,13 @@ profiledata
 ```
 >How many scans are there in this file?
 >How do these scans relate to each other?
-
 <details>
 <summary>Answer</summary>
 
 >There are 119 scans (according to the spectra data)\
 >How do the scans relate? The spectra data block suggests there is a retention time. Technically this may be the case, but thinking back to the lab practical, no chromatography was involved. The samples were spotted on a plate, and are supposedly a uniform sample - meaning there is no relevant separation that should show across scans. We will get a more accurate picture is we sum the scans together.
 </details>
+</br>
 
 An issue with summing the scans is that small differences in mz values between scans may exist. We can match individual data points between scans with a small tolerance that accounts for the variation between samples. But which tolerance should we allow? How much variation is there between subsequent scans?
 
@@ -39,7 +39,7 @@ N.B. this is slightly misusing a function designed for use with LCMS. It does, h
 
 >1.5e-5 = 15e-6 = 15 ppm
 </details>
-
+</br>
 We can then sum up the scans. combineSpectra does what we want, but most of the options are specified in meanMzInts(). From the documentation (run ?meanMzInts() for a list)
 
 ```r
@@ -93,7 +93,7 @@ par(mfrow=c(1,1))
 
 >In some cases the number of scans won't be equal between files. Summing them up would give us different ranges for the intensities between samples that are a technical artefact. In most cases, however, we would rely on another normalisation method to make the signals of different samples more comparable, as there are also other sources of variation that we would want to correct for. An minor advantage to averaging is that the values of an averaged spectrum are much closer to the values in the individual spectra that were used to calculate the average. This can be simulated by dividing y values in the `plot` code for the summed spectra (but not the `lines` code for the individual spectra) by 119 (i.e. `y=(MSnbase::intensity(filterMz(profile15[[1]], mz=c(380,380.3))))/119`)
 </details>
-
+</br>
 Running this manually on every file would be a lot of coding. We're going to assume that the tolerance that we've chosen will apply to all samples in this data set. We can write a bit of code (a function) that given an input, produces an output by following the steps we tell it to do.
 
 
