@@ -83,7 +83,7 @@ par(mfrow=c(1,1))
 <details>
 <summary>Answer</summary>
 
->The function `combineSpectra` takes an argument called `intensityFun` which is set to `sum` in the block above. Documentation `?meanMzInts` shows the default is actually base::mean, which would average the scans. We can therefore replace `sum` by `base::mean` or just remove the entire `intensityFun=sum` argument.
+>The function `combineSpectra` takes an argument called `intensityFun` which is set to `sum` in the block above. Documentation (`?meanMzInts`) shows the default is actually base::mean, which would average the scans. We can therefore replace `sum` by `base::mean` or just remove the entire `intensityFun=sum` argument.
 </details>
 </br>
 
