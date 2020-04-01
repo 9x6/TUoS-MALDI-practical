@@ -105,7 +105,7 @@ createSumFilenames<-function(filename, out.folder="SUM"){
 mergeScans<-function(filename, out.folder="SUM", tol.ppm=15){
   filename.out<-createSumFilenames(filename, out.folder)
   if(file.exists(filename.out)){
-    warning(paste("Not processing",filename,"as output file",filename.out,"already exists"))
+    warning(paste("Not processing",filename,"as output file",filename.out,"already exists\n"))
   } else {
     profiledata<-readMSData(filename, centroided. = F, msLevel. = 1, mode = 'onDisk')
     profiledata.merge<-MSnbase::combineSpectra(Spectra(spectra(profiledata)),
@@ -134,10 +134,10 @@ infiles
 Which we can then feed to `sapply`, that will run a function of our choice using each value of infiles as an input for individual runs of the function we tell it to use:
 
 ```r
-sapply(infiles, mergeScans)
+invisible(sapply(infiles, mergeScans))
 ```
-
-**Note that this code takes a while to finish** \
+The call is wrapped inside `invisible`, which suppresses the printing of output. Our function does not return any informative information as output (not to be confused with messages), but it saves it directly to files instead.\
+**Note that this code takes a while to finish.** \
 After the code has run, we'll have a summed spectrum for each sample in the SUM directory of our project directory.
 
 ## Next steps
