@@ -99,6 +99,213 @@ The code chunk suppresses warnings for the import function, as it will produce a
 ### Visualising data
 
 We can take a look at a full spectrum like so:
-```{r}
+```r
 plot(rawdata[[1]])
+```
+
+```r
+mzroi<-c(200,210)
+inroi<-c(0,10000)
+```
+
+
+```r
+par(mfrow=c(1,2))
+plot(rawdata[[1]])
+plot(rawdata[[1]], xlim=mzroi, ylim=inroi)
+par(mfrow=c(1,1))
+```
+
+```r
+spectra<-transformIntensity(rawdata, method="sqrt")
+plot(spectra[[1]], xlim=mzroi, ylim=sqrt(inroi))
+```
+
+How much to smooth? Rule of thumb, as many data points in the smooth as there are in the top half of the peak. 
+```r
+plot(spectra[[1]], xlim=c(205.5,206.5), ylim=c(0,40), type='b')
+```
+Assuming the signal between 206.0 and 206.2 is a single peak, we count roughly 11 data points between when it first goes above 20 to when it last drops below 20 counts. For the Savitzky golay filter, we specify the number of points to include before and after the data point being calculated (the halfwindow size). The total window is 2 * halfwindow + 1 (the data point itself). If we have a full window of 11, the halfwindow size is therefore 5.
+```r
+testspectrumhw5<-smoothIntensity(spectra[[1]], method="SavitzkyGolay", halfWindowSize=5)
+plot(testspectrumhw5, xlim=c(205.5,206.5), ylim=c(0,40), type='b')
+```
+This still preserves part of the 'twin' peak shape. If we increase the smoothing further, we start to lose this information:
+```r
+testspectrumhw11<-smoothIntensity(spectra[[1]], method="SavitzkyGolay", halfWindowSize=11)
+plot(testspectrumhw11, xlim=c(205.5,206.5), ylim=c(0,40), type='b')
+```
+The halfwindow of 5 looks like it will smooth the data, without losing all the detail. Here's a slightly more zoomed out view and the same view for the non-smoothed data.
+```r
+plot(testspectrumhw5, xlim=mzroi, ylim=sqrt(inroi), type='l')
+plot(spectra[[1]], xlim=mzroi, ylim=sqrt(inroi), type='l')
+```
+
+
+We stick with a halfWindowSize of 5, and apply it to all spectra.
+```r
+spectra<-smoothIntensity(spectra, method="SavitzkyGolay", halfWindowSize=5)
+```
+
+Next, what do baselines look like?
+```r
+baselinetest <- estimateBaseline(spectra[[1]], method="SNIP", iterations=100)
+plot(spectra[[1]])
+lines(baselinetest, col='red')
+```
+It looks a little bumpy. In close up:
+```r
+plot(spectra[[1]], xlim=mzroi, ylim=c(0,40))
+lines(baselinetest, col='red')
+```
+Increasing the interationcount makes it less sensitive:
+```r
+baselinetest <- estimateBaseline(spectra[[1]], method="SNIP", iterations=250)
+plot(spectra[[1]], xlim=mzroi, ylim=c(0,40))
+lines(baselinetest, col='red')
+plot(spectra[[1]])
+lines(baselinetest, col='red')
+```
+As it now looks smoother, we apply these settings for baseline removal. As an output to check what's happened, we include a couple of plots.
+```r
+spectra <- removeBaseline(spectra, method="SNIP", iterations=250)
+plot(spectra[[1]], xlim=mzroi, ylim=c(0,40))
+plot(spectra[[1]])
+```
+
+In addition, we also want normalise for overall intensity, or total ion count. We can get the sums of the intensities to check for big differences
+```r
+intensities<-sapply(spectra, function(spectrum){sum(intensity(spectrum))})
+barplot(intensities/1e6, names.arg = samples$tech_id, xlab = "sample", ylab = "total intensity (in 1e6 counts)", las=2)
+```
+For the actual calibration, and comparison afterwards:
+```r
+spectra <- calibrateIntensity(spectra, method="TIC")
+intensities<-sapply(spectra, function(spectrum){sum(intensity(spectrum))})
+barplot(intensities, names.arg = samples$tech_id, xlab = "sample", ylab = "total intensity", las=2)
+```
+
+Next we call some tentative peaks and see how well our samples are aligned
+```r
+testpeaks<-detectPeaks(spectra, halfWindowSize=5, SNR=3)
+warps<-determineWarpingFunctions(testpeaks, plot = T, tolerance = 150e-6)
+```
+
+Check output pdf. Seems to warp slightly at the edges, but overall no big effect. Warp:
+
+```r
+spectra_aligned <- alignSpectra(spectra,
+                        halfWindowSize=5,
+                        SNR=3,
+                        tolerance=150e-6,
+                        warpingMethod="lowess")
+```
+
+What is the effect?
+```r
+testpeaks_after<-detectPeaks(spectra_aligned, halfWindowSize=5, SNR=3)
+plot(spectra_aligned[[18]], xlim=c(1061.9,1062.9), ylim=c(0,0.006))
+lines(spectra[[18]], col='grey', lty=3)
+lines(spectra_aligned[[7]], col='blue')
+lines(spectra[[7]], col='cyan3', lty=3)
+points(testpeaks[[18]], col='grey', pch=4)
+points(testpeaks[[7]], col='cyan3', pch=4)
+points(testpeaks_after[[18]], pch=4)
+points(testpeaks_after[[7]], col='blue', pch=4)
+```
+
+Looks like it might overcompensate a little, but does bring them closer together. Check if true:
+```r
+peakmzs_18<-mz(testpeaks[[18]])
+peakmzs_07<-mz(testpeaks[[7]])
+peakmzs_after_18<-mz(testpeaks_after[[18]])
+peakmzs_after_07<-mz(testpeaks_after[[7]])
+peakmzs_18[peakmzs_18 > 1062 & peakmzs_18 < 1063] - 
+  peakmzs_07[peakmzs_07 > 1062 & peakmzs_07 < 1063]
+peakmzs_after_18[peakmzs_after_18 > 1062 & peakmzs_after_18 < 1063] - 
+  peakmzs_after_07[peakmzs_after_07 > 1062 & peakmzs_after_07 < 1063]
+```
+
+In this case we can also consider to not align, as the random variation between the peaks in each sample is larger than the very mild correction we apply by warping the spectra.
+
+We also still have some noise in the data - this will always be the case. In most applications we want to avoid looking at the noise too much, so often a Signal to noise ratio (SNR) is given as a criteria for peak calling. This means that to be be regarded as a peak, the peak height needs to be above a number of times the noise level determined by the SNR. We can investigate our data for noise like so:
+
+```r
+noise<-MALDIquant::estimateNoise(spectra_aligned[[1]])
+plot(spectra_aligned[[1]], xlim = mzroi, ylim=c(0,0.006))
+lines(noise, col="red")
+lines(noise[,1],noise[,2]*5, col="purple")
+lines(noise[,1],noise[,2]*10, col="blue")
+```
+
+Now it looks like an SNR of 5 (purple line) would already cut out some peaks. However, this picture may be misleading. Let's look at a much higher m/z range:
+
+```r
+plot(spectra_aligned[[1]], xlim=c(1060,1070), ylim=c(0,0.01))
+lines(noise, col="red") #Red line: noise level
+lines(noise[,1],noise[,2]*5, col="purple") #Purple line: noise level * 5
+lines(noise[,1],noise[,2]*10, col="blue") #Blue line: noise level * 10
+```
+
+Here it look like we get a lot of repeating signal just above the 5 SNR line. An SNR of 8, or possibly even 10 might prove a better balance between restricting noise and throwing away signal.
+
+We can then call the peaks with some additional refinements:
+```r
+peaks <- detectPeaks(spectra_aligned, method="MAD", halfWindowSize=5, SNR=8, refineMz = "descendPeak", signalPercentage=25)
+```
+
+As we saw previously, even after alignment there are small difference in the peak m/z values. For an illustration:
+```r
+plot(spectra_aligned[[18]], xlim=c(1061.9,1062.9), ylim=c(0,0.006))
+for(n in seq_along(peaks)){
+  points(peaks[[n]], pch = 4, col=rainbow(length(peaks))[[n]])
+}
+```
+
+To get rid of those, we bin the Peaks from different samples within a certain tolerance together.
+```r
+peaks<-binPeaks(peaks, method="strict", tolerance = 50e-6)
+plot(spectra_aligned[[18]], xlim=c(1061.9,1062.9), ylim=c(0,0.006))
+for(n in seq_along(peaks)){
+  points(peaks[[n]], pch = 4, col=rainbow(length(peaks))[[n]])
+}
+```
+After this, we can gather our peaks and intensities:
+```r
+featureMatrix <- intensityMatrix(peaks, spectra_aligned)
+```
+As you'll have noticed, `intensityMatrix` is also reading in our aligned spectra. Why would it do that?
+
+The `featureMatrix` object is, as the name suggests, a Matrix. One row for each sample, one column for each peak. How many peaks are there in the matrix? 
+```r
+ncol(featureMatrix)
+```
+
+Some peaks still appear to be random noise. Going back a step, we can filter peaks based on in which samples they are called. Based on the documentation for `filterPeaks`, what does the following do?
+```r
+peaks_byrep<-filterPeaks(peaks, minFrequency = 1, labels = samples$bio_id, mergeWhitelists = TRUE)
+peaks_byrep_bysample<-filterPeaks(peaks_byrep, minFrequency = 0.5, labels = samples$soil, mergeWhitelists = TRUE)
+```
+
+We can then get a Matrix with just the reliable features:
+```r
+featureMatrix_filter <- intensityMatrix(peaks_byrep_bysample, spectra_aligned)
+```
+
+And check how many peaks we retained:
+```r
+ncol(featureMatrix_filter)
+```
+
+We now know where there are peaks, and what the intesity is in each sample. We don't yet know whether there are any differences between samples. A lot of analysis can be done in R, but alternatively we can export the data as csv files to enable import in other applications which are more user friendly:
+```r
+intensities_out<-data.frame(Sample=samples$tech_id,
+                            Label=samples$soil,
+                            featureMatrix_filter, check.names = F, stringsAsFactors = F)
+intensities_out<-rbind(c(NA, "rt", rep(1, ncol(intensities_out)-2)), intensities_out) #Create fake RT
+intensities_out_ex<-intensities_out %>% dplyr::filter(Sample %in% c("A3.3")) #Create fake RT
+intensities_OF<-intensities_out %>% dplyr::filter(Label %in% c("O","F","m/z"))
+write.csv(intensities_OF, row.names = F, file = "Intensities_OF.csv")
+write.csv(intensities_out, row.names = F, file = "Intensities.csv")
+write.csv(intensities_out_ex, row.names = F, file = "Intensities2.csv")
 ```
