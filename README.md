@@ -5,4 +5,5 @@
 - [Introduction](intro)
 - [Converting files](msconvert)
 - [Setting up an R project](initialR)
-- [Test](test)
+- [Processing scans](test)
+- [Extracting features](maldiquant)
