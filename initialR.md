@@ -6,7 +6,7 @@ Within the project, we can set up as many files/scripts as we need. To keep a re
 
 Create a new R script file (File > New File > R Script). Save it as '00-PackageSetup.R' or similar in the project directory. Splitting code into multiple files can be useful as some parts of the will be run once, but other parts may go thorugh multiple rounds of changes and runs. Numbering the files helps to provide a logical order of scripts, but make sure to also have a short descriptive name.
 
-In our new file, we can set up the packages that we'll use. Packages extend R's functionality, and we'll be using some that are specific to handling mass spectrometry data. Specifically, we'll set up MSnbase via [Bioconductor](https://www.bioconductor.org/about/) (a specialist repository for packages that extend functionality to handle biological data). From the default repositories we'll install MALDIquant and MALDIquantForeign
+In our new file, we can set up the packages that we'll use. Packages extend R's functionality, and we'll be using some that are specific to handling mass spectrometry data. Specifically, we'll set up MSnbase via [Bioconductor](https://www.bioconductor.org/about/) (a specialist repository for packages that extend functionality to handle biological data). From the default repositories we'll install MALDIquant and MALDIquantForeign:
 
 ```r
 if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -16,7 +16,7 @@ BiocManager::install("MSnbase")
 install.packages(c('MALDIquant','MALDIquantForeign'))
 ```
 
-Save the code, and run it (either select all code and press <kbd>CTRL</kbd>+<kbd>ENTER</kbd> or select all code and click 'Run' at the top left of the code pane). You may encounter a number of questions, including where you want to create a library (this library is for all packages in all R sessions, and is not just part of this project - the default is fine, don't set it to your project directory). The defaults are usually fine, but use your best judgement. Avoid using code that needs to be compiled (if asked). Warnings about missing rtools can be ignored.
+Save the code in your R Script, and run it (either select all code and press <kbd>CTRL</kbd>+<kbd>ENTER</kbd> or select all code and click 'Run' at the top left of the code pane). You may encounter a number of questions, including where you want to create a library (this library is for all packages in all R sessions, and is not just part of this project - the default is fine, don't set it to your project directory). The defaults are usually fine, but use your best judgement. Avoid using code that needs to be compiled (if asked). Warnings about missing rtools can be ignored.
 
 Check the output for errors (installation had a non-zero exit status). If there were errors, read what they are and check for obvious solutions (typos? no network connection? other library not installed?)
 
