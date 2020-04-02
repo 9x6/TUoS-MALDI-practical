@@ -20,9 +20,23 @@ Save the code in your R Script, and run it (either select all code and press <kb
 
 Check the output for errors (installation had a non-zero exit status). If there were errors, read what they are and check for obvious solutions (typos? no network connection? other library not installed?)
 
-If all is well, create a new R markdown file. HTML output is fine. Title and author are your choice. You may get a message asking whether you want to install recommended/required packages - this is something you want to set up.
+## Rmarkdown and code blocks in this tutorial
 
-If you're not familiar with R markdown, have a read through the example code in the new R markdown file you just created to see what markdown can do. Knit the file to see how code is formatted in the output documents.
+If the installation of your software worked out, see if R markdown is working. Create a new R _markdown_ file. When you're asked questions: HTML output is fine. Title and author are your choice. You may get a message asking whether you want to install recommended/required packages - please do so.
+
+If you're not familiar with R markdown, have a read through the example code in the new R markdown file you just created to see what markdown can do. Knit the file to see how code is formatted in the output documents to get a better understanding. If you want to play around with markdown and see live changes, there are some online tools available (for example [cryptpad code](https://cryptpad.fr/code)). There is also a [reference guide for R markdown](https://rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf).
+
+R Markdown allows you to keep your code, output and notes together. It is strongly suggested to include some text that describes what each code block does and what you take from the output (if visible output is generated). Code blocks in R Mardown look like this:
+````
+```{r}
+plot(iris)
+```
+````
+A new block can be started either by typing the opening line (``​```{r}``) and then closing it by typing the closing line (``​```​``) or by clicking insert > R in on the menu directly above the code pane. In this tutorial the code blocks are shown without the opening and closing lines, so the above block is normally shown as:
+```r
+plot(iris)
+```
+Below the code pane there is a console pane, which is minimised as a bar by default. You can bring it up by double clicking it, or using the resize buttons on the right in the bar. You can run code in here directly, but it is better practice to save all your code in Markdown (or R script in some cases). Nevertheless, the occasional quick calculation that isn't core to the code (e.g. `sqrt(1024)`) can be run this way.
 
 ## Next steps
 
