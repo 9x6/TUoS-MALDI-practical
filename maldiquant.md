@@ -124,9 +124,11 @@ plot(spectra[[1]], xlim=c(205.5,206.5), ylim=c(0,40), type='b')
 >There are 11 data points between when it first goes above 20 to when the twin peaks drop below 20 counts.
 </details>
 </br>
+
 >Many filters need a half window size to be specified. For a point for which we are calculating the smoothed value, the half window size is the number of preceding as well as the number following data points to include. What half window size could we use here?
 <details>
 <summary>Answer</summary>
+
 >For the Savitzky golay filter the total window ('neighbourhood') is 2 * halfwindow + 1 (the data point itself). If we have a full window of 11, the halfwindow size is 5 ((11-1)/2).
 </details>
 </br>
@@ -148,11 +150,13 @@ plot(spectra[[1]], xlim=c(205.5,206.5), ylim=c(0,40), type='b', main="No smoothi
 plot(testspectrumhw5, xlim=c(205.5,206.5), ylim=c(0,40), type='b', main="SG halfWindowSize 5")
 plot(testspectrumhw11, xlim=c(205.5,206.5), ylim=c(0,40), type='b', main="SG halfWindowSize 11")
 ```
+
 >Cycling through the plots, we can see that details that were still being retained with less smoothing (such as the twin peak shape) are lost. Too much smoothing may smooth out actual signal, rather than just noise.
 </details>
 </br>
 
 We stick with a halfWindowSize of 5, and apply it to all spectra.
+
 ```r
 spectra<-smoothIntensity(spectra, method="SavitzkyGolay", halfWindowSize=5)
 ```
@@ -160,17 +164,22 @@ spectra<-smoothIntensity(spectra, method="SavitzkyGolay", halfWindowSize=5)
 ### Baseline correction
 
 We now have a somewhat smooth signal. In the previous plots we saw a noisy line that hovered around 10, with an occasional peak. The level of this line may differ between samples, and may also be different at different m/z ratios. To make samples more comparable, we can correct for it. As with smoothing, it is possible to remove too much, so we take a look first:
+
 ```r
 baselinetest <- estimateBaseline(spectra[[1]], method="SNIP", iterations=100)
 plot(spectra[[1]])
 lines(baselinetest, col='red')
 ```
+
 In general it looks like there's not too much variation with this sample. However, estimated baseline shown in red looks a little bumpy. In close up:
+
 ```r
 plot(spectra[[1]], xlim=mzroi, ylim=c(0,40))
 lines(baselinetest, col='red')
 ```
+
 We can make the baseline less likely to fit to individual points by increasing the number of iterations performed in the calculation:
+
 ```r
 baselinetest <- estimateBaseline(spectra[[1]], method="SNIP", iterations=250)
 plot(spectra[[1]], xlim=mzroi, ylim=c(0,40))
@@ -178,32 +187,41 @@ lines(baselinetest, col='red')
 plot(spectra[[1]])
 lines(baselinetest, col='red')
 ```
+
 As it now looks smoother, we apply these settings for baseline removal. As an output to check what's happened, we include a couple of plots.
+
 ```r
 spectra <- removeBaseline(spectra, method="SNIP", iterations=250)
 plot(spectra[[1]], xlim=mzroi, ylim=c(0,40))
 plot(spectra[[1]])
 ```
+
 ### TIC normalisation
 
 In addition to removing the baseline, there are more steps to take to make signals more comparable. Some samples may have an overall higher (or lower) signal than other samples. We can check for this by calculating the total signal, or the total ion count (TIC). The assumption here is that the majority of the signal is similar between samples - which for soils may be a valid assumption, but this may not bet true is other settings. We can get the sums of the intensities to check for big differences:
+
 ```r
 intensities<-sapply(spectra, function(spectrum){sum(intensity(spectrum))})
 barplot(intensities/1e6, names.arg = samples$tech_id, xlab = "sample", ylab = "total intensity (in 1e6 counts)", las=2)
 ```
+
 >Are there large differences?\
 >Are any of these differences structured?
 <details>
 <summary>Answer</summary>
+
 >There's about a two-fold difference between the least and the most intensive sample. The forest soil samples seem to have a higher overall intensity. There is a slight trend for the variation between technical replicates being smaller than that between biological replicates.
 </details>
 </br>
+
 For the actual calibration, and comparison afterwards:
+
 ```r
 spectra <- calibrateIntensity(spectra, method="TIC")
 intensities<-sapply(spectra, function(spectrum){sum(intensity(spectrum))})
 barplot(intensities, names.arg = samples$tech_id, xlab = "sample", ylab = "total intensity", las=2)
 ```
+
 The differences should be lot smaller now.
 
 ### Peak alignment
