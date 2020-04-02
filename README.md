@@ -7,3 +7,4 @@
 - [Setting up an R project](initialR)
 - [Processing scans](sumR)
 - [Extracting features](maldiquant)
+- [Learning from the data](metaboanalyst)
