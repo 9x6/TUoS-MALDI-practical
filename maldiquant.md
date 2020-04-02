@@ -95,6 +95,12 @@ length(rawdata)
 The code chunk suppresses warnings for the import function, as it will produce a bunch of warnings about mismatching checksums. Whilst there is a standard for how these should be calculated, it appears that there are different implementations that can cause mismatches. At this stage the relevant question is:
 
 >Did we load the expected number of files?
+<details>
+<summary>Hint</summary>
+
+>As we have 27 samples, we expect 27 files to be loaded. If this isn't the case, it's time for some troubleshooting. Is your sample table as expected? Do the files exist in the correct directories? Do you have the relevant packages installed and loaded?
+</details>
+</br>
 
 ### Transformation and smoothing
 
