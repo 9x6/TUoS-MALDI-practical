@@ -98,34 +98,41 @@ The code chunk suppresses warnings for the import function, as it will produce a
 
 ### Visualising data
 
-We can take a look at a full spectrum like so:
-```r
-plot(rawdata[[1]])
-```
+We can take a look at a full spectrum and a small section with some more detail like so:
 
 ```r
-mzroi<-c(200,210)
+mzroi<-c(200,210) #We'll reuse these coordinates later.
 inroi<-c(0,10000)
-```
-
-
-```r
-par(mfrow=c(1,2))
 plot(rawdata[[1]])
 plot(rawdata[[1]], xlim=mzroi, ylim=inroi)
-par(mfrow=c(1,1))
 ```
+This creates two plots. In Rstudio, you can switch between plots by clicking the small previews above the current plot.
+One of the first steps to take is to transform the raw intensities by taking the square root. This causes the variance between measurements (e.g. the same peak in technical replicates) to be less dependent on the mean intensity (of e.g. the peak).
 
 ```r
 spectra<-transformIntensity(rawdata, method="sqrt")
 plot(spectra[[1]], xlim=mzroi, ylim=sqrt(inroi))
 ```
-
-How much to smooth? Rule of thumb, as many data points in the smooth as there are in the top half of the peak. 
+This does highlight the noise in the data - the signal does not look very smooth. A common step in signal processing is to smooth out the signal. Using information from neighbouring data points, we try to apprimate what the underlying signal is likely to be. A widely used smoothing approach is applying a Savitzky-Golay filter. The important question is how many data points should we use to define the neighbourhood. In other words, how much should the data be smoothed? As a rule of thumb, as many data points in the smooth as there are in the top half of the narrowest peak that should be included. From our random zoomed-in part of the spectrum, we take the 2nd largest peak: 
 ```r
 plot(spectra[[1]], xlim=c(205.5,206.5), ylim=c(0,40), type='b')
 ```
-Assuming the signal between 206.0 and 206.2 is a single peak, we count roughly 11 data points between when it first goes above 20 to when it last drops below 20 counts. For the Savitzky golay filter, we specify the number of points to include before and after the data point being calculated (the halfwindow size). The total window is 2 * halfwindow + 1 (the data point itself). If we have a full window of 11, the halfwindow size is therefore 5.
+>Assuming the signal between 206.0 and 206.2 is a single peak, how many data points should we smooth over?
+>Optional tip: to add a horizontal line to a plot, use `abline`, see `?abline`.
+<details>
+<summary>Answer</summary>
+There are 11 data points between when it first goes above 20 to when the twin peaks drop below 20 counts.
+</details>
+</br>
+>Many filters need a half window size to be specified. For a point for which we are calculating the smoothed value, the half window size is the number of preceding as well as the number following data points to include. What half window size could we use here?
+<details>
+<summary>Answer</summary>
+For the Savitzky golay filter the total window ('neighbourhood') is 2 * halfwindow + 1 (the data point itself). If we have a full window of 11, the halfwindow size is 5 ((11-1)/2).
+</details>
+</br>
+
+
+
 ```r
 testspectrumhw5<-smoothIntensity(spectra[[1]], method="SavitzkyGolay", halfWindowSize=5)
 plot(testspectrumhw5, xlim=c(205.5,206.5), ylim=c(0,40), type='b')
