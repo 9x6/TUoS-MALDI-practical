@@ -209,7 +209,8 @@ In addition to removing the baseline, there are more steps to take to make signa
 
 ```r
 intensities<-sapply(spectra, function(spectrum){sum(intensity(spectrum))})
-barplot(intensities/1e6, names.arg = samples$tech_id, xlab = "sample", ylab = "total intensity (in 1e6 counts)", las=2)
+barplot(intensities/1e6, names.arg = samples$tech_id,
+        xlab = "sample", ylab = "total intensity (in 1e6 counts)", las=2)
 ```
 
 >Are there large differences?\
@@ -226,7 +227,8 @@ For the actual calibration, and comparison afterwards:
 ```r
 spectra <- calibrateIntensity(spectra, method="TIC")
 intensities<-sapply(spectra, function(spectrum){sum(intensity(spectrum))})
-barplot(intensities, names.arg = samples$tech_id, xlab = "sample", ylab = "total intensity", las=2)
+barplot(intensities, names.arg = samples$tech_id,
+        xlab = "sample", ylab = "total intensity", las=2)
 ```
 
 The differences should be lot smaller now.
@@ -308,7 +310,8 @@ Here it look like we get a lot of repeating signal just above the 5 SNR line. An
 
 Keeping an SNR of 8, call the peaks with some additional refinements:
 ```r
-peaks <- detectPeaks(spectra_aligned, method="MAD", halfWindowSize=5, SNR=8, refineMz = "descendPeak", signalPercentage=25)
+peaks <- detectPeaks(spectra_aligned, method="MAD", halfWindowSize=5, SNR=8,
+                     refineMz = "descendPeak", signalPercentage=25)
 ```
 
 As we saw previously, even after alignment there are small difference in the peak m/z values. For an illustration:
