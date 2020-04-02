@@ -124,7 +124,7 @@ This does highlight the noise in the data - the signal does not look very smooth
 plot(spectra[[1]], xlim=c(205.5,206.5), ylim=c(0,40), type='b')
 ```
 >Assuming the signal between 206.0 and 206.2 is a single peak, how many data points should we smooth over?\
->Optional tip: to add a horizontal line to a plot, use `abline`, see `?abline`.
+>Optional tip: to add a horizontal line to a plot, add a new line that calls `abline` (see `?abline`) after your plot command.
 <details>
 <summary>Answer</summary>
 >There are 11 data points between when it first goes above 20 to when the twin peaks drop below 20 counts.
@@ -232,23 +232,32 @@ The differences should be lot smaller now.
 
 ### Peak alignment
 
-Next we call some tentative peaks and see how well our samples are aligned
+There can be differences in the detection of ions that causes the signal to somewhat.
+To see what the alignment is, we call some peaks in the data and see how well they align. The code below this, and will create a file called Rplots.pdf in your project directory.
 ```r
 testpeaks<-detectPeaks(spectra, halfWindowSize=5, SNR=3)
-warps<-determineWarpingFunctions(testpeaks, plot = T, tolerance = 150e-6)
+warps<-determineWarpingFunctions(testpeaks, plot = T, tolerance = 100e-6)
 ```
+The plots in the pdf show the difference between peaks in the reference (a mix of peaks from all samples) and the peaks found in each sample. At line is fitted through that describes the average shift.
 
-Check output pdf. Seems to warp slightly at the edges, but overall no big effect. Warp:
+>What patterns do you see?
+<details>
+<summary>Answer</summary>
+>The fitted lines are mostly flat, but curve a bit in the higher m/z ranges. In this case alignment may not change much, especially as the variation in the difference between reference peak and sample is larger than the range of the corrections proposed.
+</details>
+</br>
+
+Align the spectra using the following code:
 
 ```r
 spectra_aligned <- alignSpectra(spectra,
                         halfWindowSize=5,
                         SNR=3,
-                        tolerance=150e-6,
+                        tolerance=100e-6,
                         warpingMethod="lowess")
 ```
 
-What is the effect?
+We're expecting changes in the higher m/z range. Let's take a look:
 ```r
 testpeaks_after<-detectPeaks(spectra_aligned, halfWindowSize=5, SNR=3)
 plot(spectra_aligned[[18]], xlim=c(1061.9,1062.9), ylim=c(0,0.006))
@@ -260,8 +269,7 @@ points(testpeaks[[7]], col='cyan3', pch=4)
 points(testpeaks_after[[18]], pch=4)
 points(testpeaks_after[[7]], col='blue', pch=4)
 ```
-
-Looks like it might overcompensate a little, but does bring them closer together. Check if true:
+The dotted lines are the spectra before alignment, the solid lines are the spectra after alignment. The peak position is indicated by a cross. As discussed, the shifts here are minor. We can see if the peaks are brought closer together:
 ```r
 peakmzs_18<-mz(testpeaks[[18]])
 peakmzs_07<-mz(testpeaks[[7]])
@@ -273,9 +281,9 @@ peakmzs_after_18[peakmzs_after_18 > 1062 & peakmzs_after_18 < 1063] -
   peakmzs_after_07[peakmzs_after_07 > 1062 & peakmzs_after_07 < 1063]
 ```
 
-In this case we can also consider to not align, as the random variation between the peaks in each sample is larger than the very mild correction we apply by warping the spectra.
+### Calling peaks
 
-We also still have some noise in the data - this will always be the case. In most applications we want to avoid looking at the noise too much, so often a Signal to noise ratio (SNR) is given as a criteria for peak calling. This means that to be be regarded as a peak, the peak height needs to be above a number of times the noise level determined by the SNR. We can investigate our data for noise like so:
+The samples are now quite comparable, so we can move towards extracting the data that we're intersted in: the peak locations (m/z) and the intensity in each sample (count). As we've seen, there is still some noise in the data - this will always be the case. In most applications we want to avoid looking at the noise too much, so often a Signal to noise ratio (SNR) is given as a criteria for peak calling. This means that to be be regarded as a peak, the peak height needs to be above a number of times the noise level determined by the SNR. We can investigate our data for noise like so:
 
 ```r
 noise<-MALDIquant::estimateNoise(spectra_aligned[[1]])
@@ -296,7 +304,7 @@ lines(noise[,1],noise[,2]*10, col="blue") #Blue line: noise level * 10
 
 Here it look like we get a lot of repeating signal just above the 5 SNR line. An SNR of 8, or possibly even 10 might prove a better balance between restricting noise and throwing away signal.
 
-We can then call the peaks with some additional refinements:
+Keeping an SNR of 8, call the peaks with some additional refinements:
 ```r
 peaks <- detectPeaks(spectra_aligned, method="MAD", halfWindowSize=5, SNR=8, refineMz = "descendPeak", signalPercentage=25)
 ```
@@ -309,7 +317,7 @@ for(n in seq_along(peaks)){
 }
 ```
 
-To get rid of those, we bin the Peaks from different samples within a certain tolerance together.
+To get rid of those small differences, we bin the Peaks from different samples within a certain tolerance together.
 ```r
 peaks<-binPeaks(peaks, method="strict", tolerance = 50e-6)
 plot(spectra_aligned[[18]], xlim=c(1061.9,1062.9), ylim=c(0,0.006))
@@ -317,28 +325,60 @@ for(n in seq_along(peaks)){
   points(peaks[[n]], pch = 4, col=rainbow(length(peaks))[[n]])
 }
 ```
-After this, we can gather our peaks and intensities:
+This replaces the peak m/z of all the peaks that are close together with the average m/z of those peaks. The intensities remain unchanged.\
+We can then extract our data.
 ```r
 featureMatrix <- intensityMatrix(peaks, spectra_aligned)
 ```
-As you'll have noticed, `intensityMatrix` is also reading in our aligned spectra. Why would it do that?
+>As you'll have noticed, `intensityMatrix` is also reading in our aligned spectra. Why would it do that?
+<details>
+<summary>Answer</summary>
+>In some samples we may not be able to call a peak at the location where we can call one in other samples. Reasons for this can be that there is no peak, the peak is masked by a stronger adjacent peak, or the noise level is higher in some samples. As you can read from `?intensityMatrix`, the function uses the spectra to fill in values for missing peaks.
+</details>
+</br>
 
-The `featureMatrix` object is, as the name suggests, a Matrix. One row for each sample, one column for each peak. How many peaks are there in the matrix? 
-```r
-ncol(featureMatrix)
+>The `featureMatrix` object is, as the name suggests, a Matrix. One row for each sample, one column for each peak. How many peaks are there in the matrix? 
+<details>
+<summary>Answer</summary>
+
+>Essentially this is the number of columns
+  ```r
+  ncol(featureMatrix)
+  ```
+(2041)
+</details>
+</br>
+
+We can also take a look at the number of peaks called in each sample:
+```{r}
+peakspersample<-sapply(peaks, function(x){length(mz(x))})
+barplot(peakspersample, names.arg = samples$tech_id, xlab = "sample", ylab = "peaks called", las=2)
 ```
+>Are there any differences?
+<details>
+<summary>Answer</summary>
 
-Some peaks still appear to be random noise. Going back a step, we can filter peaks based on in which samples they are called. Based on the documentation for `filterPeaks`, what does the following do?
+>There's a trend that more peaks are called in the Forest samples.
+</details>
+</br>
+
+The differing number of peaks between biological replicates, and even between technical replicates raises some questions about how reliable those peaks are. A peak that is only called in one replicate of one sample is probably not going to allow us come to any statiscally relevant conclusions. A way of getting a cleaner data set is filtering peaks based on in which samples they are called. >Based on the documentation for `filterPeaks`, what does the following do?
 ```r
 peaks_byrep<-filterPeaks(peaks, minFrequency = 1, labels = samples$bio_id, mergeWhitelists = TRUE)
 peaks_byrep_bysample<-filterPeaks(peaks_byrep, minFrequency = 0.5, labels = samples$soil, mergeWhitelists = TRUE)
 ```
+<details>
+<summary>Answer</summary>
 
-We can then get a Matrix with just the reliable features:
+>It first keeps only peaks that appear in all three replicates (`minFrequency = 1`) of at least one (`mergeWhitelists = TRUE`) biological replicate (`labels = samples$bio_id`).\
+>Next, the surviving peaks are filtered again to retain only peaks that were called in at least half of the technical replicates across all biolical replicates in at least one soil type.
+</details>
+</br>
+
+Get a matrix with just the 'reliable' features:
 ```r
 featureMatrix_filter <- intensityMatrix(peaks_byrep_bysample, spectra_aligned)
 ```
-
 And check how many peaks we retained:
 ```r
 ncol(featureMatrix_filter)
@@ -356,3 +396,7 @@ write.csv(intensities_OF, row.names = F, file = "Intensities_OF.csv")
 write.csv(intensities_out, row.names = F, file = "Intensities.csv")
 write.csv(intensities_out_ex, row.names = F, file = "Intensities2.csv")
 ```
+There will now be a couple of csv files stored in your project directory, which we will use for subsequent steps.
+
+## Next steps
+Next we look at [what the extracted data can tell us](metaboanalyst).
