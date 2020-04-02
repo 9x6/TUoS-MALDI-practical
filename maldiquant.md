@@ -127,6 +127,7 @@ plot(spectra[[1]], xlim=c(205.5,206.5), ylim=c(0,40), type='b')
 >Optional tip: to add a horizontal line to a plot, add a new line that calls `abline` (see `?abline`) after your plot command.
 <details>
 <summary>Answer</summary>
+
 >There are 11 data points between when it first goes above 20 to when the twin peaks drop below 20 counts.
 </details>
 </br>
@@ -232,7 +233,7 @@ The differences should be lot smaller now.
 
 ### Peak alignment
 
-There can be differences in the detection of ions that causes the signal to somewhat.
+There can be differences in the detection of ions that causes the signal to somewhat shift on the m/z dimension between samples.
 To see what the alignment is, we call some peaks in the data and see how well they align. The code below this, and will create a file called Rplots.pdf in your project directory.
 ```r
 testpeaks<-detectPeaks(spectra, halfWindowSize=5, SNR=3)
@@ -243,6 +244,7 @@ The plots in the pdf show the difference between peaks in the reference (a mix o
 >What patterns do you see?
 <details>
 <summary>Answer</summary>
+
 >The fitted lines are mostly flat, but curve a bit in the higher m/z ranges. In this case alignment may not change much, especially as the variation in the difference between reference peak and sample is larger than the range of the corrections proposed.
 </details>
 </br>
@@ -333,6 +335,7 @@ featureMatrix <- intensityMatrix(peaks, spectra_aligned)
 >As you'll have noticed, `intensityMatrix` is also reading in our aligned spectra. Why would it do that?
 <details>
 <summary>Answer</summary>
+
 >In some samples we may not be able to call a peak at the location where we can call one in other samples. Reasons for this can be that there is no peak, the peak is masked by a stronger adjacent peak, or the noise level is higher in some samples. As you can read from `?intensityMatrix`, the function uses the spectra to fill in values for missing peaks.
 </details>
 </br>
