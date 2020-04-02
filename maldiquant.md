@@ -393,7 +393,7 @@ intensities_out<-data.frame(Sample=samples$tech_id,
                             Label=samples$soil,
                             featureMatrix_filter, check.names = F, stringsAsFactors = F)
 intensities_out<-rbind(c(NA, "rt", rep(1, ncol(intensities_out)-2)), intensities_out) #Create fake RT
-intensities_out_ex<-intensities_out %>% dplyr::filter(Sample %in% c("A3.3")) #Create fake RT
+intensities_out_ex<-intensities_out %>% dplyr::filter(Sample %in% c("A3.3")) #See metaboanalyst section
 intensities_OF<-intensities_out %>% dplyr::filter(Label %in% c("O","F","m/z"))
 write.csv(intensities_OF, row.names = F, file = "Intensities_OF.csv")
 write.csv(intensities_out, row.names = F, file = "Intensities.csv")
