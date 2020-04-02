@@ -401,5 +401,28 @@ write.csv(intensities_out_ex, row.names = F, file = "Intensities2.csv")
 ```
 There will now be a couple of csv files stored in your project directory, which we will use for subsequent steps.
 
+### Summary
+
+<details>
+<summary>Core steps without any diagnostic plots</summary>
+
+>This assumes a dataframe called `samples`, with a column `filename` that points to mzML files
+```r
+suppressWarnings(rawdata<-importMzMl(samples$filename, centroided = F, verbose=F))
+spectra<-transformIntensity(rawdata, method="sqrt")
+spectra<-smoothIntensity(spectra, method="SavitzkyGolay", halfWindowSize=5)
+spectra<-removeBaseline(spectra, method="SNIP", iterations=250)
+spectra<-calibrateIntensity(spectra, method="TIC")
+spectra_aligned<-alignSpectra(spectra, halfWindowSize=5, SNR=3,
+                              tolerance=100e-6, warpingMethod="lowess")
+peaks<-detectPeaks(spectra_aligned, method="MAD", halfWindowSize=5, SNR=8,
+                              refineMz="descendPeak", signalPercentage=25)
+peaks<-binPeaks(peaks, method="strict", tolerance = 50e-6)
+peaks_byrep<-filterPeaks(peaks, minFrequency = 1, labels = samples$bio_id, mergeWhitelists = TRUE)
+featureMatrix_filter <- intensityMatrix(peaks_byrep, spectra_aligned)
+```
+>Additional filtering is recommended. The exact output format depends on the downstream application, and is not included in the summary above.
+</details>
+
 ## Next steps
 Next we look at [what the extracted data can tell us](metaboanalyst).
