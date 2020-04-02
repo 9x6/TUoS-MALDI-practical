@@ -425,6 +425,11 @@ peaks_byrep<-filterPeaks(peaks, minFrequency = 1, labels = samples$bio_id, merge
 featureMatrix_filter <- intensityMatrix(peaks_byrep, spectra_aligned)
 ```
 >Additional filtering is recommended. The exact output format depends on the downstream application, and is not included in the summary above.
+<details>
+  <summary>Example html output from Knit, based on full code</summary>
+  
+  >See [here](02-FeatureExtraction.html).
+</details>
 </details>
 
 ## Next steps
