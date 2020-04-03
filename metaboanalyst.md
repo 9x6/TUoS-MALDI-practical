@@ -48,4 +48,6 @@ To further investigate the data, we will use MetaboAnalyst. We'll use the online
      >Also: we still cannot see differences between agricultural and organic soil.
      </details>
      </br>
-12. 
+12. Let's look at the organic and the agricultural soil in isolation. Go back to the 'Data editor' and exclude the Forest soil samples (hint: click the first one, hold <kbd>SHIFT</kbd> and click the last one to select them in one go). Do the samples separate in the PCA?
+
+13. Now select OrthoPLSDA. Do the samples separate in the scores plot?
