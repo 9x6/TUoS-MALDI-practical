@@ -4,7 +4,7 @@ To further investigate the data, we will use MetaboAnalyst. We'll use the online
 
   1. Access [MetaboAnalyst](https://www.metaboanalyst.ca). Under 'Please cite' there are useful resources if you ever need to dive deeper into the tools. If you use metaboanalyst in published work, please cite one ore more of these publications (depending on relevance). At the bottom of the page there's a summary of what analyses can be done in metaboanalyst. When you're ready to start, follow the link at the top of top of the page labeled '[>> Click here to start<<](https://www.metaboanalyst.ca/MetaboAnalyst/ModuleView.xhtml)'.
   2. From the circle of tools select 'Statistical Analysis'
-  3. Under item 1, choose Data type: Peak intensity table, samples in rows (unpaired). Select the file 'Intensities.csv' from your project directory via the 'Data file: choose file' button. Finally, click the 'submit' button to the right.
+  3. Under item 1, choose Data type: Peak intensity table, samples in rows (unpaired). Select the file 'Intensities.csv' from your project directory via the 'Data file: choose file' button. Finally, click the 'submit' button to the right. If for some reason you don't have access to the peak intensity table, download a spare copy [here](intensities.csv).
   4. Next you'll be presented with a **Data Integrity Check**. If all is well there will be no missing values, though there may be a warning about an empty row (which we ignore). As there are no missing values, skip to the next section.
   5. **Data Filtering**. The text above the tool outlines a number of different reasons why a variable may be non informative. We've performed some filtering of peaks that weren't very reproducible, but we haven't filtered any that have nearly identical intensities in all samples. IQR filtering will do that for us.
   6. **Normalization** What types of normalisation and transformation have we already performed?
@@ -50,4 +50,20 @@ To further investigate the data, we will use MetaboAnalyst. We'll use the online
      </br>
 12. Let's look at the organic and the agricultural soil in isolation. Go back to the 'Data editor' and exclude the Forest soil samples (hint: click the first one, hold <kbd>SHIFT</kbd> and click the last one to select them in one go). Do the samples separate in the PCA?
 
-13. Now select OrthoPLSDA. Do the samples separate in the scores plot?
+13. Now select OrthoPLSDA. Do the samples separate in the scores plot? On the Sig. Feature tab, check the variables that are on the extremes of the Y-axis (take the most extreme value at each end). Take a note of the m/z values for these peaks. Do the samples separate well for those peaks? How does it compare with variables more towards the middle?
+
+14. An example of a method that is used for biomarker detection is SAM. Run a SAM analysis and click on the small table icon above the plot. The results are sorted by decreasing significance. Are the results in agreement with the oPLSDA?
+
+15. We can try to find out what compounds the peaks in our analysis correspond to. There are a number of database that contain compound information. One example of one that can be accessed free of charge (after registration) is [METLIN](https://metlin.scripps.edu). Create an account and access [Simple Search](https://metlin.scripps.edu/landing_page.php?pgcontent=simple_search). Enter a mass of interest, select Charge: Positive and add the adducts M+NH4 and M+K. I suggest enabling 'Show only with KEGG IDs from search' under KEGG. Finally, hit search. Also take a look at one of the lower range mass peaks that pops up in the SAM analysis: m/z 336.1529. The KEGG link will tell you what kind of processes the putative matches are involved in.
+    <details>
+      <summary>Answer</summary>
+      
+      |m/z|Higher in|Notes|
+      |-------:|:---:|----|
+      |937.2335| Organic | Potentially involved in geraniol degradation |
+      |903.2016| Agricultural | Potentially involved in microbial metabolism / phenylalanine |
+      |336.1529| Organic | Tebupirimfos, an insecticide is included, but it is not licensed for use in EU. It is more likely that it is any other (natural) compound (and there are other options in the list). |
+      >In all cases these could just as easily be another compound. Targeted analysis and comparison against a standard is required to positively ID.
+    </details>
+    </br>
+
