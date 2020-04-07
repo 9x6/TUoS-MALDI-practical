@@ -13,7 +13,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install(version = "3.10")
 BiocManager::install("MSnbase")
-install.packages(c('MALDIquant','MALDIquantForeign'))
+install.packages(c('MALDIquant','MALDIquantForeign','dplyr'))
 ```
 
 Save the code in your R Script, and run it (either select all code and press <kbd>CTRL</kbd>+<kbd>ENTER</kbd> or select all code and click 'Run' at the top left of the code pane). You may encounter a number of questions, including where you want to create a library (this library is for all packages in all R sessions, and is not just part of this project - the default is fine, don't set it to your project directory). The defaults are usually fine, but use your best judgement. Avoid using code that needs to be compiled (if asked). Warnings about missing rtools can be ignored.
@@ -37,6 +37,16 @@ A new block can be started either by typing the opening line (``​```{r}``) and
 plot(iris)
 ```
 Below the code pane there is a console pane, which is minimised as a bar by default. You can bring it up by double clicking it, or using the resize buttons on the right in the bar. You can run code in here directly, but it is better practice to save all your code in Markdown (or R script in some cases). Nevertheless, the occasional quick calculation that isn't core to the code (e.g. `sqrt(1024)`) can be run this way.
+
+Through the tutorial there a questions to help you think about the steps that are being taken. To enable you to work at your own pace, and to be more independent of an audio/video conferencing, the answers are usually included in the tutorial. To avoid cases where you automatically read the answer before you've had a chance to think, the answers are in collapsed text blocks. These blocks are indicated by a triangle icon followed by a label (usually 'answer') and can be openend by clicking the icon or label: 
+
+ <details>
+       <summary>Answer</summary>
+     
+     >This text should be visible only after clicking 'Answer'. Clicking the text again will hide this text again.
+ </details>
+
+You will get more out of the tutorial if you take your time to think about the questions before checking the answers.
 
 ## Next steps
 
