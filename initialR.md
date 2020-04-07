@@ -40,11 +40,11 @@ Below the code pane there is a console pane, which is minimised as a bar by defa
 
 Through the tutorial there a questions to help you think about the steps that are being taken. To enable you to work at your own pace, and to be more independent of an audio/video conferencing, the answers are usually included in the tutorial. To avoid cases where you automatically read the answer before you've had a chance to think, the answers are in collapsed text blocks. These blocks are indicated by a triangle icon followed by a label (usually 'answer') and can be openend by clicking the icon or label: 
 
- <details>
-    <summary>Answer</summary>
+<details>
+  <summary>Answer</summary>
      
-    >This text should be visible only after clicking 'Answer'. Clicking the label again will hide this text again.
- </details>
+  >This text should be visible only after clicking 'Answer'. Clicking the label again will hide this text again.
+</details>
 
 You will get more out of the tutorial if you take your time to think about the questions before checking the answers.
 
