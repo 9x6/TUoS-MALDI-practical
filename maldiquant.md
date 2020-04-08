@@ -75,7 +75,9 @@ samples
   <summary>Solution</summary>
 
 ```r
-samples$soil<-c(rep('A',9),rep('F',9),rep('O',9))
+samples$soil<-c(rep(c('A','F','O'), each=9))
+#Alternatively:
+#samples$soil<-c(rep('A',9),rep('F',9),rep('O',9))
 samples$biorep<-c(rep(rep(1:3, each=3),3))
 samples$techrep<-c(rep(1:3,9))
 samples$bio_id<-paste0(samples$soil,samples$biorep)
