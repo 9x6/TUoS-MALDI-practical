@@ -13,7 +13,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install(version = "3.10")
 BiocManager::install("MSnbase")
-install.packages(c('MALDIquant','MALDIquantForeign','dplyr'))
+install.packages(c('MALDIquant','MALDIquantForeign'))
 ```
 
 Save the code in your R Script, and run it (either select all code and press <kbd>CTRL</kbd>+<kbd>ENTER</kbd> or select all code and click 'Run' at the top left of the code pane). You may encounter a number of questions, including where you want to create a library (this library is for all packages in all R sessions, and is not just part of this project - the default is fine, don't set it to your project directory). The defaults are usually fine, but use your best judgement. Avoid using code that needs to be compiled (if asked). Warnings about missing rtools can be ignored.
