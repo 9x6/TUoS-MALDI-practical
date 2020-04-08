@@ -67,3 +67,4 @@ To further investigate the data, we will use MetaboAnalyst. We'll use the online
     </details>
     </br>
 
+16. As a challenge, identify some of the components that drive the separation of Forest and Organic soils in a PCA. Hint: on the loadings plot page there's a small table button. This allows you to sort peaks by loading on PC1. Both the top scoring and the bottom scoring components are of interest (One is higher in Forest, the other is higher in Organic). There's a good introduction to some the compound types you may find in this [paper](https://doi.org/10.1111/1365-2745.12644).
