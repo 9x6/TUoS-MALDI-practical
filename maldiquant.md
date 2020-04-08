@@ -395,12 +395,9 @@ We now know where there are peaks, and what the intesity is in each sample. We d
 intensities_out<-data.frame(Sample=samples$tech_id,
                             Label=samples$soil,
                             featureMatrix_filter, check.names = F, stringsAsFactors = F)
-intensities_out<-rbind(c(NA, "rt", rep(1, ncol(intensities_out)-2)), intensities_out) #Create fake RT
-intensities_out_ex<-intensities_out %>% dplyr::filter(Sample %in% c("A3.3")) #See metaboanalyst section
-intensities_OF<-intensities_out %>% dplyr::filter(Label %in% c("O","F","m/z"))
-write.csv(intensities_OF, row.names = F, file = "Intensities_OF.csv")
+write.table(t(intensities_out)[,!intensities_out$Sample %in% c("A3.3")], file = "Intensities_col.csv",
+            row.names = TRUE, col.names = FALSE, sep=",")
 write.csv(intensities_out, row.names = F, file = "Intensities.csv")
-write.csv(intensities_out_ex, row.names = F, file = "Intensities2.csv")
 ```
 There will now be a couple of csv files stored in your project directory, which we will use for subsequent steps.
 
