@@ -4,7 +4,7 @@ Previously, we've [set up a project directory and unpacked the data](intro) we'r
 
 Within the project, we can set up as many files/scripts as we need. To keep a record of what we've done, we'll save any commands that we're running as R scripts or as R markdown files.
 
-Create a new R script file (File > New File > R Script). Save it as '00-PackageSetup.R' or similar in the project directory. Splitting code into multiple files can be useful as some parts of the will be run once, but other parts may go thorugh multiple rounds of changes and runs. Numbering the files helps to provide a logical order of scripts, but make sure to also have a short descriptive name.
+Create a new R script file (File > New File > R Script). Save it as '00-PackageSetup.R' or similar in the project directory. Splitting code into multiple files can be useful as some parts of the will be run once, but other parts may go through multiple rounds of changes and runs. Numbering the files helps to provide a logical order of scripts, but make sure to also have a short descriptive name.
 
 In our new file, we can set up the packages that we'll use. Packages extend R's functionality, and we'll be using some that are specific to handling mass spectrometry data. Specifically, we'll set up MSnbase via [Bioconductor](https://www.bioconductor.org/about/) (a specialist repository for packages that extend functionality to handle biological data). From the default repositories we'll install MALDIquant and MALDIquantForeign:
 
@@ -26,7 +26,7 @@ If the installation of your software worked out, see if R markdown is working. C
 
 If you're not familiar with R markdown, have a read through the example code in the new R markdown file you just created to see what markdown can do. Knit the file to see how code is formatted in the output documents to get a better understanding. If you want to play around with markdown and see live changes, there are some online tools available (for example [cryptpad code](https://cryptpad.fr/code)). There is also a [reference guide for R markdown](https://rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf).
 
-R Markdown allows you to keep your code, output and notes together. It is strongly suggested to include some text that describes what each code block does and what you take from the output (if visible output is generated). Code blocks in R Mardown look like this:
+R Markdown allows you to keep your code, output and notes together. It is strongly suggested to include some text that describes what each code block does and what you take from the output (if visible output is generated). Code blocks in R Markdown look like this:
 ````
 ```{r}
 plot(iris)
@@ -38,7 +38,7 @@ plot(iris)
 ```
 Below the code pane there is a console pane, which is minimised as a bar by default. You can bring it up by double clicking it, or using the resize buttons on the right in the bar. You can run code in here directly, but it is better practice to save all your code in Markdown (or R script in some cases). Nevertheless, the occasional quick calculation that isn't core to the code (e.g. `sqrt(1024)`) can be run this way.
 
-Through the tutorial there a questions to help you think about the steps that are being taken. To enable you to work at your own pace, and to be more independent of an audio/video conferencing, the answers are usually included in the tutorial. To avoid cases where you automatically read the answer before you've had a chance to think, the answers are in collapsed text blocks. These blocks are indicated by a triangle icon followed by a label (usually 'answer') and can be openend by clicking the icon or label: 
+Through the tutorial there a questions to help you think about the steps that are being taken. To enable you to work at your own pace, and to be more independent of an audio/video conferencing, the answers are usually included in the tutorial. To avoid cases where you automatically read the answer before you've had a chance to think, the answers are in collapsed text blocks. These blocks are indicated by a triangle icon followed by a label (usually 'answer') and can be opened by clicking the icon or label: 
 
 <details>
   <summary>Answer</summary>

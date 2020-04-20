@@ -121,7 +121,7 @@ One of the first steps to take is to transform the raw intensities by taking the
 spectra<-transformIntensity(rawdata, method="sqrt")
 plot(spectra[[1]], xlim=mzroi, ylim=sqrt(inroi))
 ```
-This does highlight the noise in the data - the signal does not look very smooth. A common step in signal processing is to smooth out the signal. Using information from neighbouring data points, we try to apprimate what the underlying signal is likely to be. A widely used smoothing approach is applying a Savitzky-Golay filter. The important question is how many data points should we use to define the neighbourhood. In other words, how much should the data be smoothed? As a rule of thumb, as many data points in the smooth as there are in the top half of the narrowest peak that should be included. From our random zoomed-in part of the spectrum, we take the 2nd largest peak: 
+This does highlight the noise in the data - the signal does not look very smooth. A common step in signal processing is to smooth out the signal. Using information from neighbouring data points, we try to approximate what the underlying signal is likely to be. A widely used smoothing approach is applying a Savitzky-Golay filter. The important question is how many data points should we use to define the neighbourhood. In other words, how much should the data be smoothed? As a rule of thumb, as many data points in the smooth as there are in the top half of the narrowest peak that should be included. From our random zoomed-in part of the spectrum, we take the 2nd largest peak: 
 ```r
 plot(spectra[[1]], xlim=c(205.5,206.5), ylim=c(0,40), type='b')
 ```
@@ -138,7 +138,7 @@ plot(spectra[[1]], xlim=c(205.5,206.5), ylim=c(0,40), type='b')
 <details>
 <summary>Answer</summary>
 
->For the Savitzky golay filter the total window ('neighbourhood') is 2 * halfwindow + 1 (the data point itself). If we have a full window of 11, the halfwindow size is 5 ((11-1)/2).
+>For the Savitzky-Golay filter the total window ('neighbourhood') is 2 * halfwindow + 1 (the data point itself). If we have a full window of 11, the halfwindow size is 5 ((11-1)/2).
 </details>
 </br>
 
@@ -249,7 +249,7 @@ The plots in the pdf show the difference between peaks in the reference (a mix o
 <details>
 <summary>Answer</summary>
 
->The fitted lines are mostly flat, but curve a bit in the higher m/z ranges. In this case alignment may not change much, especially as the variation in the difference between reference peak and sample is larger than the range of the corrections proposed. In other words, if the fitted line is near 0 for all samples, we don't expect large differences after alignment. In this case the spread of differences (how far are the individual points are from 0) is much larger in both directions than the suggested correction, meaning the inaccuracy of the peak m/z value will be largely caused by rather variation (which we cannot control) rather than a systematic shift (which we could correct for). The code for aligning the spectra below is included for completeness, even though it isn't strictly necesary.
+>The fitted lines are mostly flat, but curve a bit in the higher m/z ranges. In this case alignment may not change much, especially as the variation in the difference between reference peak and sample is larger than the range of the corrections proposed. In other words, if the fitted line is near 0 for all samples, we don't expect large differences after alignment. In this case the spread of differences (how far are the individual points are from 0) is much larger in both directions than the suggested correction, meaning the inaccuracy of the peak m/z value will be largely caused by rather variation (which we cannot control) rather than a systematic shift (which we could correct for). The code for aligning the spectra below is included for completeness, even though it isn't strictly necessary.
 </details>
 </br>
 
@@ -289,7 +289,7 @@ peakmzs_after_18[peakmzs_after_18 > 1062 & peakmzs_after_18 < 1063] -
 
 ### Calling peaks
 
-The samples are now quite comparable, so we can move towards extracting the data that we're intersted in: the peak locations (m/z) and the intensity in each sample (count). As we've seen, there is still some noise in the data - this will always be the case. In most applications we want to avoid looking at the noise too much, so often a Signal to noise ratio (SNR) is given as a criteria for peak calling. This means that to be be regarded as a peak, the peak height needs to be above a number of times the noise level determined by the SNR. We can investigate our data for noise like so:
+The samples are now quite comparable, so we can move towards extracting the data that we're interested in: the peak locations (m/z) and the intensity in each sample (count). As we've seen, there is still some noise in the data - this will always be the case. In most applications we want to avoid looking at the noise too much, so often a Signal to noise ratio (SNR) is given as a criteria for peak calling. This means that to be be regarded as a peak, the peak height needs to be above a number of times the noise level determined by the SNR. We can investigate our data for noise like so:
 
 ```r
 noise<-MALDIquant::estimateNoise(spectra_aligned[[1]])
@@ -370,7 +370,7 @@ barplot(peakspersample, names.arg = samples$tech_id, xlab = "sample", ylab = "pe
 </details>
 </br>
 
-The differing number of peaks between biological replicates, and even between technical replicates raises some questions about how reliable those peaks are. A peak that is only called in one replicate of one sample is probably not going to allow us come to any statiscally relevant conclusions. A way of getting a cleaner data set is filtering peaks based on in which samples they are called. >Based on the documentation for `filterPeaks`, what does the following do?
+The differing number of peaks between biological replicates, and even between technical replicates raises some questions about how reliable those peaks are. A peak that is only called in one replicate of one sample is probably not going to allow us come to any statistically relevant conclusions. A way of getting a cleaner data set is filtering peaks based on in which samples they are called. >Based on the documentation for `filterPeaks`, what does the following do?
 ```r
 peaks_byrep<-filterPeaks(peaks, minFrequency = 1, labels = samples$bio_id, mergeWhitelists = TRUE)
 peaks_byrep_bysample<-filterPeaks(peaks_byrep, minFrequency = 0.5, labels = samples$soil, mergeWhitelists = TRUE)
@@ -379,7 +379,7 @@ peaks_byrep_bysample<-filterPeaks(peaks_byrep, minFrequency = 0.5, labels = samp
 <summary>Answer</summary>
 
 >It first keeps only peaks that appear in all three replicates (`minFrequency = 1`) of at least one (`mergeWhitelists = TRUE`) biological replicate (`labels = samples$bio_id`).\
->Next, the surviving peaks are filtered again to retain only peaks that were called in at least half of the technical replicates across all biolical replicates in at least one soil type.
+>Next, the surviving peaks are filtered again to retain only peaks that were called in at least half of the technical replicates across all biological replicates in at least one soil type.
 </details>
 </br>
 
@@ -392,7 +392,7 @@ And check how many peaks we retained:
 ncol(featureMatrix_filter)
 ```
 
-We now know where there are peaks, and what the intesity is in each sample. We don't yet know whether there are any differences between samples. A lot of analysis can be done in R, but alternatively we can export the data as csv files to enable import in other applications which are more user friendly:
+We now know where there are peaks, and what the intensity is in each sample. We don't yet know whether there are any differences between samples. A lot of analysis can be done in R, but alternatively we can export the data as csv files to enable import in other applications which are more user friendly:
 ```r
 intensities_out<-data.frame(Sample=samples$tech_id,
                             Label=samples$soil,
