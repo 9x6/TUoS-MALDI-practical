@@ -243,13 +243,13 @@ To see what the alignment is, we call some peaks in the data and see how well th
 testpeaks<-detectPeaks(spectra, halfWindowSize=5, SNR=3)
 warps<-determineWarpingFunctions(testpeaks, plot = T, tolerance = 100e-6)
 ```
-The plots in the pdf show the difference between peaks in the reference (a mix of peaks from all samples) and the peaks found in each sample. At line is fitted through that describes the average shift.
+The plots in the pdf show the difference between peaks in the reference (a mix of peaks from all samples) and the peaks found in each sample. A line is fitted through these comparisons that describes the averaged shift from the reference.
 
 >What patterns do you see?
 <details>
 <summary>Answer</summary>
 
->The fitted lines are mostly flat, but curve a bit in the higher m/z ranges. In this case alignment may not change much, especially as the variation in the difference between reference peak and sample is larger than the range of the corrections proposed.
+>The fitted lines are mostly flat, but curve a bit in the higher m/z ranges. In this case alignment may not change much, especially as the variation in the difference between reference peak and sample is larger than the range of the corrections proposed. In other words, if the fitted line is near 0 for all samples, we don't expect large differences after alignment. In this case the spread of differences (how far are the individual points are from 0) is much larger in both directions than the suggested correction, meaning the inaccuracy of the peak m/z value will be largely caused by rather variation (which we cannot control) rather than a systematic shift (which we could correct for). The code for aligning the spectra below is included for completeness, even though it isn't strictly necesary.
 </details>
 </br>
 
