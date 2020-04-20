@@ -26,7 +26,7 @@ RStudio provides a more comfortable working environment for R. As with R itself,
 
 *If you have a limited data allowance, do not download the RAW data.*
 
-The [raw data files](https://drive.google.com/open?id=1oY4WlWQrMBI9cYQs5AaBZ5ysH0oXWlNg) (~560 Mb) are available if you are logged in to a University of Sheffield account.
+The [raw data files](https://drive.google.com/open?id=1oY4WlWQrMBI9cYQs5AaBZ5ysH0oXWlNg) (~560 Mb) are available if you are logged in to a University of Sheffield account. There is a download icon towards the top right of the page (icon of an arrow pointing down into a tray).
 
 If you have a limited connection, [pre-processed input files](https://drive.google.com/open?id=1U6qHw7jATcopLD4IetoPnd-DWJDuEne9) (~15 Mb) can be downloaded here (University of Sheffield account required).
 
